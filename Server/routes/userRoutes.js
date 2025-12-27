@@ -1,5 +1,5 @@
 const express = require("express");
-const { EditProfile, GetCurrentUser } = require("../controllers/UserController");
+const { EditProfile, GetCurrentUser } = require("../controllers/userController");
 const FindCurrentUser = require("../middleware/UserMiddleware");
 const Upload = require('../middleware/multer');
 const router = express.Router();
