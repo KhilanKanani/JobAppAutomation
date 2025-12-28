@@ -20,20 +20,21 @@ const SendApplication = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let timer;
-    let loadingToast;
-    
+
     if (!user?.resumeUrl) {
       toast.error("Please upload resume in profile first");
       return;
     }
 
+    let toastId;
+    let timer;
+
     try {
       setLoading(true);
-      loadingToast = toast.loading("Sending application...");
+      toastId = toast.loading("Sending application...");
 
       timer = setTimeout(() => {
-        toast.loading("Generating a personalized email…", { id: loadingToast });
+        toast.loading("Generating a personalized email…", { id: toastId });
       }, 3000);
 
       await axios.post(`${SERVER_URL}/api/app/send`,
@@ -46,22 +47,24 @@ const SendApplication = () => {
           resumeUrl: user.resumeUrl,
         }, { withCredentials: true });
 
-      toast.success("Application sent successfully", { id: loadingToast });
+      toast.success("Application sent successfully", { id: toastId });
+
       setRole("");
       setCompanyName("");
       setHrEmail("");
     }
 
     catch (err) {
-      toast.error("Failed to send application", { id: loadingToast });
+      toast.error("Failed to send application", { id: toastId });
       console.error("Failed to send application:", err);
     }
 
     finally {
-      clearTimeout(timer);
+      clearTimeout(timer);   // 🔥 very important
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
