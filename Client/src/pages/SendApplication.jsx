@@ -29,7 +29,7 @@ const SendApplication = () => {
     try {
       setLoading(true);
       const loadingToast = toast.loading("Sending application...");
-      
+
       setTimeout(() => {
         toast.loading("Generating a personalized email…", { id: loadingToast });
       }, 3000);
@@ -48,12 +48,13 @@ const SendApplication = () => {
       setRole("");
       setCompanyName("");
       setHrEmail("");
-    } 
-    
-    catch {
-      toast.error("Failed to send application");
     }
-    
+
+    catch (err) {
+      toast.error("Failed to send application", { id: loadingToast });
+      console.error("Failed to send application:", err);
+    }
+
     finally {
       setLoading(false);
     }
@@ -112,6 +113,7 @@ const SendApplication = () => {
                   type="text"
                   placeholder="Frontend Developer"
                   value={role}
+                  disabled={loading}
                   onChange={(e) => setRole(e.target.value)}
                   className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
                 />
@@ -124,6 +126,7 @@ const SendApplication = () => {
                 <input
                   type="text"
                   required
+                  disabled={loading}
                   placeholder="Google"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
@@ -139,6 +142,7 @@ const SendApplication = () => {
               <input
                 type="email"
                 required
+                disabled={loading}
                 placeholder="hr@company.com"
                 value={hrEmail}
                 onChange={(e) => setHrEmail(e.target.value)}

@@ -23,6 +23,7 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
             ${cleanResumeUrl ? `- Resume PDF Link: ${cleanResumeUrl}` : '- Resume: Not provided'}
         
             Important Instructions:
+            0. chatGpt can visit resume link and bring data to skill, project, experience and etc and brifly send in email to some bold word. 
             1. Assume the resume PDF contains the candidate’s real skills, experience, and projects.
             2. Briefly summarize the candidate’s strongest skills and experience **without inventing anything**.
             3. Naturally mention that the **resume PDF is attached or available via link**.
@@ -37,6 +38,8 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
             8. Do NOT add extra blank lines or spacing.
             9. End with a polite call-to-action (e.g., interview or discussion).
             10. Each email must sound slightly different every time.
+            11. Resume link send in email to hr can see user resume
+            12. make a perfect email and hr can hire this candidate
         
             Tone:
             Professional, respectful, genuine, and recruiter-friendly.
@@ -60,8 +63,17 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
             max_tokens: 500,
         });
 
+        // Validate response
+        if (!response?.choices?.[0]?.message?.content) {
+            throw new Error("Empty response from OpenAI API. Please try again.");
+        }
+
         // Clean up the response
         let emailContent = response.choices[0].message.content.trim();
+        
+        if (!emailContent || emailContent.length === 0) {
+            throw new Error("Generated email content is empty. Please try again.");
+        }
         
         // Remove any markdown formatting if present
         emailContent = emailContent

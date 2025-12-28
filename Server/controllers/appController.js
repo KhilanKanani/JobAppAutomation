@@ -7,6 +7,15 @@ const sendApplication = async (req, res) => {
         const userId = req.userId;
         const { fullName, email, role, companyName, hrEmail, resumeUrl, } = req.body;
 
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(hrEmail)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid HR email address format",
+            });
+        }
+
         /*  GPT EMAIL  */
         const emailContent = await generateJobEmail({ fullName, email, role, companyName, resumeUrl, });
 
@@ -14,24 +23,24 @@ const sendApplication = async (req, res) => {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
-            secure: true, // true for 465, false for other ports
+            secure: false, // false for port 587, true for port 465
             auth: {
                 user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS, // Should be an App Password, not regular password
+                pass: process.env.MAIL_PASS,
             },
             tls: {
-                rejectUnauthorized: false // Required for some Render deployments
+                rejectUnauthorized: false // Required for Render and some cloud deployments
             },
-            connectionTimeout: 10000, // 10 seconds
+            connectionTimeout: 15000, // 15 seconds
             greetingTimeout: 10000,
-            socketTimeout: 10000,
+            socketTimeout: 15000,
         });
 
         await transporter.verify();
         console.log("Email Verified");
 
         // Generate dynamic subject line
-        const subjectLines = role 
+        const subjectLines = role
             ? [
                 `Application for ${role} Position at ${companyName}`,
                 `Interested in ${role} Role - ${fullName}`,
@@ -44,7 +53,7 @@ const sendApplication = async (req, res) => {
                 `Interest in Joining ${companyName} - ${fullName}`,
                 `Career Opportunity Inquiry - ${fullName}`
             ];
-        
+
         const subject = subjectLines[Math.floor(Math.random() * subjectLines.length)];
 
         const mailOptions = {
@@ -70,10 +79,9 @@ const sendApplication = async (req, res) => {
     }
 
     catch (err) {
-        console.error("SendApplication Error:", err.message);
         return res.status(500).json({
             success: false,
-            message: "Failed to send application",
+            message: err.message || "Failed to send application. Please try again.",
         });
     }
 };
