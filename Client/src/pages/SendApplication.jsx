@@ -21,7 +21,8 @@ const SendApplication = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let timer;
-
+    let loadingToast;
+    
     if (!user?.resumeUrl) {
       toast.error("Please upload resume in profile first");
       return;
@@ -29,7 +30,7 @@ const SendApplication = () => {
 
     try {
       setLoading(true);
-      const loadingToast = toast.loading("Sending application...");
+      loadingToast = toast.loading("Sending application...");
 
       timer = setTimeout(() => {
         toast.loading("Generating a personalized email…", { id: loadingToast });
