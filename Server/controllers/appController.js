@@ -2,6 +2,15 @@ const Application = require("../models/applicationmodel");
 const nodemailer = require("nodemailer");
 const generateJobEmail = require("../config/gptEmailGenerator");
 
+const withTimeout = (promise, ms) => {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("SMTP timeout on Render")), ms)
+        ),
+    ]);
+};
+
 const sendApplication = async (req, res) => {
     try {
         const userId = req.userId;
@@ -60,7 +69,10 @@ const sendApplication = async (req, res) => {
             text: emailContent.replace(/<[^>]*>/g, '').trim(),
         };
 
-        await transporter.sendMail(mailOptions);
+        await withTimeout(
+            transporter.sendMail(mailOptions),
+            12000 
+        );
 
         /*  SAVE HISTORY  */
         const application = await Application.create({ userId, fullName, email, role, companyName, hrEmail, resumeUrl, emailContent: emailContent.trim(), status: "sent", });
