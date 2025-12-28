@@ -12,11 +12,19 @@ const sendApplication = async (req, res) => {
 
         /*  MAIL SETUP  */
         const transporter = nodemailer.createTransport({
-            service: "gmail",
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: true, // true for 465, false for other ports
             auth: {
                 user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS,
+                pass: process.env.MAIL_PASS, // Should be an App Password, not regular password
             },
+            tls: {
+                rejectUnauthorized: false // Required for some Render deployments
+            },
+            connectionTimeout: 10000, // 10 seconds
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
         });
 
         await transporter.verify();
@@ -44,7 +52,8 @@ const sendApplication = async (req, res) => {
             replyTo: email,
             to: hrEmail,
             subject: subject,
-            html: emailContent.trim(),  
+            html: emailContent.trim(),
+            text: emailContent.replace(/<[^>]*>/g, '').trim(),
         };
 
         await transporter.sendMail(mailOptions);
