@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { SERVER_URL } from "../../main";
@@ -8,9 +9,7 @@ import { setUserdata, setLoadings } from "../../redux/Userslice";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -20,17 +19,12 @@ const Login = () => {
 
     dispatch(setLoadings(true));
     setLoading(true);
-    setMessage({ type: "", text: "" });
 
     try {
       const res = await axios.post(`${SERVER_URL}/api/auth/login`, { email, password }, { withCredentials: true });
       dispatch(setUserdata(res.data));
 
-
-      setMessage({
-        type: "success",
-        text: "Login successful!",
-      });
+      toast.success("Login successful!");
 
       setTimeout(() => {
         navigate("/");
@@ -38,12 +32,10 @@ const Login = () => {
     }
 
     catch (err) {
-      setMessage({
-        type: "error",
-        text:
-          err.response?.data?.message ||
-          "Invalid email or password",
-      });
+      toast.error(
+        err.response?.data?.message ||
+        "Invalid email or password"
+      );
     }
 
     finally {
@@ -72,18 +64,6 @@ const Login = () => {
         <p className="text-center text-gray-500 mt-1">
           Login to Job Application Automation
         </p>
-
-        {/* ✅ Message */}
-        {message.text && (
-          <div
-            className={`mt-4 text-sm text-center px-4 py-2 rounded-lg ${message.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-              }`}
-          >
-            {message.text}
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">

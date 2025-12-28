@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "sonner";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -11,8 +12,6 @@ const SendApplication = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
   const [fullName] = useState(user?.name || "");
   const [userEmail] = useState(user?.email || "");
   const [role, setRole] = useState("");
@@ -23,13 +22,17 @@ const SendApplication = () => {
     e.preventDefault();
 
     if (!user?.resumeUrl) {
-      setMessage("Please upload resume in profile first");
+      toast.error("Please upload resume in profile first");
       return;
     }
 
     try {
       setLoading(true);
-      setMessage("Sending application...");
+      const loadingToast = toast.loading("Sending application...");
+      
+      setTimeout(() => {
+        toast.loading("Generating a personalized email…", { id: loadingToast });
+      }, 3000);
 
       await axios.post(`${SERVER_URL}/api/app/send`,
         {
@@ -41,19 +44,23 @@ const SendApplication = () => {
           resumeUrl: user.resumeUrl,
         }, { withCredentials: true });
 
-      setMessage("Application sent successfully");
+      toast.success("Application sent successfully", { id: loadingToast });
       setRole("");
       setCompanyName("");
       setHrEmail("");
-    } catch {
-      setMessage("Failed to send application");
-    } finally {
+    } 
+    
+    catch {
+      toast.error("Failed to send application");
+    }
+    
+    finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       <Navbar />
 
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
@@ -68,12 +75,6 @@ const SendApplication = () => {
               Automatically send a professional email to HR
             </p>
           </div>
-
-          {message && (
-            <div className="mt-4 text-center text-sm text-blue-600">
-              {message}
-            </div>
-          )}
 
           {/* FORM */}
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">

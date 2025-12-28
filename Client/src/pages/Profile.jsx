@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import { SERVER_URL } from "../main";
 import { setUserdata } from "../redux/Userslice";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
     const { userdata } = useSelector((state) => state.user);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const user = userdata?.user;
+    
 
     const [loading, setLoading] = useState(true);
     const [edit, setEdit] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState("");
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -32,17 +35,17 @@ const Profile = () => {
     const handleSave = async () => {
         try {
             if (!name.trim()) {
-                setMessage("Full name is required");
+                toast.error("Full name is required");
                 return;
             }
 
             if (!resumeUrl && !resumeFile) {
-                setMessage("Please upload your resume");
+                toast.error("Please upload your resume");
                 return;
             }
 
             setSaving(true);
-            setMessage("Saving profile...");
+            const loadingToast = toast.loading("Saving profile...");
 
             const formData = new FormData();
             formData.append("name", name);
@@ -53,10 +56,10 @@ const Profile = () => {
             setResumeUrl(res.data.user.resumeUrl || "");
             setResumeFile(null);
 
-            setMessage("Profile updated successfully");
+            toast.success("Profile updated successfully", { id: loadingToast });
             setEdit(false);
         } catch (err) {
-            setMessage("Profile update failed");
+            toast.error("Profile update failed");
         } finally {
             setSaving(false);
         }
@@ -77,7 +80,6 @@ const Profile = () => {
         try {
             await axios.post(`${SERVER_URL}/api/auth/logout`, {}, { withCredentials: true });
             dispatch(setUserdata(null));
-            setOpen(false);
             navigate("/");
         }
 
@@ -124,10 +126,6 @@ const Profile = () => {
                     </div>
 
                     <div className="p-6 space-y-8">
-
-                        {message && (
-                            <p className="text-center text-sm text-blue-600">{message}</p>
-                        )}
 
                         {/* BASIC INFO */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

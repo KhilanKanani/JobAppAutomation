@@ -37,7 +37,8 @@ const GetCurrentUser = async (req, res) => {
     try {
         const userId = req.userId;
 
-        const user = await UserModel.findById({ _id: userId }).select("-password");
+        const user = await UserModel.findById({ _id: userId }).select("-password").lean();
+        // Use lean() for better performance (returns plain JS objects)
 
         if (!user) {
             return res.status(500).json({

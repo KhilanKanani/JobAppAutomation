@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserdata } from "../redux/Userslice";
 import axios from "axios";
 import { SERVER_URL } from "../main";
 
-const Navbar = () => {
+const Navbar = memo(() => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,7 +18,6 @@ const Navbar = () => {
     isActive
       ? "text-blue-600 font-semibold"
       : "text-gray-600 hover:text-blue-600 transition";
-
 
   const handleLogout = async () => {
     try {
@@ -134,6 +133,7 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
+});
 
+Navbar.displayName = 'Navbar';
 export default Navbar;

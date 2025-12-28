@@ -22,18 +22,35 @@ const sendApplication = async (req, res) => {
         await transporter.verify();
         console.log("Email Verified");
 
+        // Generate dynamic subject line
+        const subjectLines = role 
+            ? [
+                `Application for ${role} Position at ${companyName}`,
+                `Interested in ${role} Role - ${fullName}`,
+                `${role} Position Application - ${fullName}`,
+                `Application: ${role} at ${companyName}`
+            ]
+            : [
+                `Seeking Opportunity at ${companyName} - ${fullName}`,
+                `Application for Position at ${companyName}`,
+                `Interest in Joining ${companyName} - ${fullName}`,
+                `Career Opportunity Inquiry - ${fullName}`
+            ];
+        
+        const subject = subjectLines[Math.floor(Math.random() * subjectLines.length)];
+
         const mailOptions = {
             from: `"${fullName}" <${process.env.MAIL_USER}>`,
             replyTo: email,
             to: hrEmail,
-            subject: role ? `Interest in ${role} Position at ${companyName}` : `Seeking Internship Opportunity at ${companyName}`,
-            html: emailContent.trim().replace(/\n/g, "<br/>"),
+            subject: subject,
+            html: emailContent.trim(),  
         };
+
+        await transporter.sendMail(mailOptions);
 
         /*  SAVE HISTORY  */
         const application = await Application.create({ userId, fullName, email, role, companyName, hrEmail, resumeUrl, emailContent: emailContent.trim(), status: "sent", });
-        
-        await transporter.sendMail(mailOptions);
 
         return res.status(200).json({
             success: true,
@@ -63,7 +80,10 @@ const getUserApplications = async (req, res) => {
             });
         }
 
-        const applications = await Application.find({ userId }).sort({ createdAt: -1 });
+        const applications = await Application.find({ userId })
+            .select('companyName role hrEmail createdAt status emailContent _id')
+            .sort({ createdAt: -1 })
+            .lean(); // Use lean() for better performance (returns plain JS objects)
 
         return res.status(200).json({
             success: true,

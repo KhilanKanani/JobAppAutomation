@@ -49,6 +49,8 @@ const Home = () => {
             src="https://illustrations.popsy.co/gray/work-from-home.svg"
             alt="Job Automation"
             className="w-full max-w-sm md:max-w-md"
+            loading="lazy"
+            decoding="async"
           />
         </div>
       </section>
