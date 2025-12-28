@@ -117,7 +117,7 @@ const SendApplication = () => {
                   value={role}
                   disabled={loading}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  className={`w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${loading && "bg-gray-100"}`}
                 />
               </div>
 
@@ -132,7 +132,7 @@ const SendApplication = () => {
                   placeholder="Google"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  className={`w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${loading && "bg-gray-100"}`}
                 />
               </div>
             </div>
@@ -148,7 +148,7 @@ const SendApplication = () => {
                 placeholder="hr@company.com"
                 value={hrEmail}
                 onChange={(e) => setHrEmail(e.target.value)}
-                className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                className={`w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 ${loading && "bg-gray-100"}`}
               />
             </div>
 

@@ -30,8 +30,8 @@ const sendApplication = async (req, res) => {
             greetingTimeout: 10000,
             socketTimeout: 15000,
         });
-        
-        await transporter.verify();
+
+        // await transporter.verify();
         console.log("Email Verified");
 
         // Generate dynamic subject line
