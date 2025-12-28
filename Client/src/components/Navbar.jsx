@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUserdata } from "../redux/Userslice";
 import axios from "axios";
 import { SERVER_URL } from "../main";
+import { toast } from "sonner";
 
 const Navbar = memo(() => {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ const Navbar = memo(() => {
     try {
       await axios.post(`${SERVER_URL}/api/auth/logout`, {}, { withCredentials: true });
       dispatch(setUserdata(null));
+      toast.success("Logout successful !")
       setOpen(false);
       navigate("/");
     }

@@ -80,6 +80,7 @@ const Profile = () => {
         try {
             await axios.post(`${SERVER_URL}/api/auth/logout`, {}, { withCredentials: true });
             dispatch(setUserdata(null));
+            toast.success("Logout successful !")
             navigate("/");
         }
 
