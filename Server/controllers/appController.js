@@ -71,7 +71,7 @@ const sendApplication = async (req, res) => {
 
         await withTimeout(
             transporter.sendMail(mailOptions),
-            12000 
+            12000
         );
 
         /*  SAVE HISTORY  */
@@ -86,11 +86,15 @@ const sendApplication = async (req, res) => {
     }
 
     catch (err) {
+        console.error("SEND APPLICATION ERROR FULL:", err);
+
         return res.status(500).json({
             success: false,
-            message: err.message || "Failed to send application. Please try again.",
+            message: err.message,
+            stack: err.stack,
         });
     }
+
 };
 
 const getUserApplications = async (req, res) => {
