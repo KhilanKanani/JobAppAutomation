@@ -9,7 +9,7 @@ const openai = new OpenAI({
 const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl, }) => {
     try {
         const cleanResumeUrl = resumeUrl ? resumeUrl.replace("/upload/", "/upload/f_auto/") : "";
-        
+
         const prompt = `
             You are a senior HR communication expert who writes highly effective job application emails.
         
@@ -23,7 +23,6 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
             ${cleanResumeUrl ? `- Resume PDF Link: ${cleanResumeUrl}` : '- Resume: Not provided'}
         
             Important Instructions:
-            0. chatGpt can visit resume link and bring data to skill, project, experience and etc and brifly send in email to some bold word. 
             1. Assume the resume PDF contains the candidate’s real skills, experience, and projects.
             2. Briefly summarize the candidate’s strongest skills and experience **without inventing anything**.
             3. Naturally mention that the **resume PDF is attached or available via link**.
@@ -51,7 +50,7 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
             - No markdown
             - No explanations
             - No comments
-        `;     
+        `;
 
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
@@ -70,11 +69,11 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
 
         // Clean up the response
         let emailContent = response.choices[0].message.content.trim();
-        
+
         if (!emailContent || emailContent.length === 0) {
             throw new Error("Generated email content is empty. Please try again.");
         }
-        
+
         // Remove any markdown formatting if present
         emailContent = emailContent
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -96,7 +95,7 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
 
     } catch (error) {
         console.error("GPT Email Generation Error:", error.message);
-        
+
         // Fallback email template
         const fallbackEmail = `
             <p>Dear Hiring Manager,</p>

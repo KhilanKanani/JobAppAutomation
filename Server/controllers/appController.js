@@ -21,21 +21,16 @@ const sendApplication = async (req, res) => {
 
         /*  MAIL SETUP  */
         const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false, // false for port 587, true for port 465
+            service: "gmail",
             auth: {
                 user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS,
+                pass: process.env.MAIL_PASS, // App Password
             },
-            tls: {
-                rejectUnauthorized: false // Required for Render and some cloud deployments
-            },
-            connectionTimeout: 15000, // 15 seconds
+            connectionTimeout: 10000,
             greetingTimeout: 10000,
             socketTimeout: 15000,
         });
-
+        
         await transporter.verify();
         console.log("Email Verified");
 
