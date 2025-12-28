@@ -1,12 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { useSelector } from "react-redux";
-import FetchHistory from "../fetchUserdata/FetchHistory";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { SERVER_URL } from "../main";
+import { setHistory } from "../redux/Userslice";
 
 const History = () => {
-  FetchHistory();
+  const dispatch = useDispatch();
   const { history } = useSelector((state) => state.user);
   const [openEmail, setOpenEmail] = useState(null);
+  const [loading, setloading] = useState(false);
+
+  const fetchHistory = async () => {
+    try {
+      setloading(true);
+      const res = await axios.get(`${SERVER_URL}/api/app/history`, { withCredentials: true });
+      dispatch(setHistory(res?.data?.applications));
+      setloading(false);
+    }
+
+    catch (err) {
+      console.error("Failed to fetch subscription:", err);
+      setloading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600 text-sm">Fetch history...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-100 to-gray-200">
@@ -65,8 +98,8 @@ const History = () => {
                 <div className="mt-5 flex items-center justify-between">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${app.status === "sent"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
                       }`}
                   >
                     {app.status.toUpperCase()}
