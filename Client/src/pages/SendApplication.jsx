@@ -26,6 +26,16 @@ const SendApplication = () => {
       return;
     }
 
+    // Validate email format
+    const emailRegex =
+      /^(?=.{1,254}$)(?=.{1,64}@)(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*)@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))*\.[a-z]{2,}$/;
+
+    if (!emailRegex.test(hrEmail)) {
+      toast.error("Invalid HR email address format");
+      return;
+    }
+
+
     let toastId;
     let timer;
 
@@ -55,7 +65,7 @@ const SendApplication = () => {
     }
 
     catch (err) {
-      toast.error("Failed to send application", { id: toastId });
+      toast.error(err.response?.data?.message || "Failed to send application", { id: toastId });
       console.error("Failed to send application:", err);
     }
 

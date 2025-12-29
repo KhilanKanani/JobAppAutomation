@@ -22,10 +22,11 @@ const Signup = () => {
     dispatch(setLoadings(true));
 
     try {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex =
+        /^(?=.{1,254}$)(?=.{1,64}@)(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*)@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))*\.[a-z]{2,}$/;
       if (!emailRegex.test(email)) {
-          toast.error("Invalid email address format")
-          return;
+        toast.error("Invalid email address format")
+        return;
       }
 
       const res = await axios.post(`${SERVER_URL}/api/auth`, { name, email, password }, { withCredentials: true });

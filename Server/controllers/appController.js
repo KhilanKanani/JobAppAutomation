@@ -16,12 +16,12 @@ const sendApplication = async (req, res) => {
         const userId = req.userId;
         const { fullName, email, role, companyName, hrEmail, resumeUrl, } = req.body;
 
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(hrEmail)) {
-            return res.status(400).json({
+        const exists = await Application.findOne({ userId, role, companyName, hrEmail, });
+
+        if (exists) {
+            return res.status(409).json({
                 success: false,
-                message: "Invalid HR email address format",
+                message: "Application already sent to this HR",
             });
         }
 
@@ -33,14 +33,11 @@ const sendApplication = async (req, res) => {
             service: "gmail",
             auth: {
                 user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS, // App Password
+                pass: process.env.MAIL_PASS,
             },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 15000,
         });
 
-        // await transporter.verify();
+        await transporter.verify();
         console.log("Email Verified");
 
         // Generate dynamic subject line
@@ -60,13 +57,19 @@ const sendApplication = async (req, res) => {
 
         const subject = subjectLines[Math.floor(Math.random() * subjectLines.length)];
 
+        const plainText = emailContent
+            .replace(/<\/p>/gi, "\n")
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<[^>]*>/g, "")
+            .trim();
+
         const mailOptions = {
             from: `"${fullName}" <${process.env.MAIL_USER}>`,
             replyTo: email,
             to: hrEmail,
             subject: subject,
             html: emailContent.trim(),
-            text: emailContent.replace(/<[^>]*>/g, '').trim(),
+            text: plainText,
         };
 
         await withTimeout(
@@ -75,7 +78,7 @@ const sendApplication = async (req, res) => {
         );
 
         /*  SAVE HISTORY  */
-        const application = await Application.create({ userId, fullName, email, role, companyName, hrEmail, resumeUrl, emailContent: emailContent.trim(), status: "sent", });
+        const application = await Application.create({ userId, fullName, email, role, companyName, hrEmail, resumeUrl, emailContent: plainText, status: "sent", });
 
         return res.status(200).json({
             success: true,
