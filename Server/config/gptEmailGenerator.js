@@ -8,6 +8,10 @@ const openai = new OpenAI({
 
 const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl, }) => {
 
+    if (!process.env.OPENAI_API_KEY) {
+        throw new Error("OPENAI_API_KEY not configured");
+    }
+
     const cleanResumeUrl = resumeUrl
         ? resumeUrl.replace("/upload/", "/upload/f_auto/")
         : "";
