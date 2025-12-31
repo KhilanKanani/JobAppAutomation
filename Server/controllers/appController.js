@@ -63,20 +63,6 @@ const sendApplication = async (req, res) => {
             .replace(/<[^>]*>/g, "")
             .trim();
 
-        const mailOptions = {
-            from: `"${fullName}" <${process.env.MAIL_USER}>`,
-            replyTo: email,
-            to: hrEmail,
-            subject: subject,
-            html: emailContent.trim(),
-            text: plainText,
-        };
-
-        await withTimeout(
-            transporter.sendMail(mailOptions),
-            12000
-        );
-
         /*  SAVE HISTORY  */
         const application = await Application.create({ userId, fullName, email, role, companyName, hrEmail, resumeUrl, emailContent: plainText, status: "sent", });
 
@@ -84,8 +70,9 @@ const sendApplication = async (req, res) => {
             success: true,
             message: "Application sent successfully",
             application,
+            plainText,
+            subject
         });
-
     }
 
     catch (err) {

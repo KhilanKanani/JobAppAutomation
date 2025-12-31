@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { SERVER_URL } from "../main";
 import { useNavigate } from "react-router-dom";
+import emailjs from "emailjs-com";
 
 const SendApplication = () => {
   const { userdata } = useSelector((state) => state.user);
@@ -47,7 +48,7 @@ const SendApplication = () => {
         toast.loading("Generating a personalized email…", { id: toastId });
       }, 3000);
 
-      await axios.post(`${SERVER_URL}/api/app/send`,
+      const res = await axios.post(`${SERVER_URL}/api/app/send`,
         {
           fullName,
           email: userEmail,
@@ -56,6 +57,18 @@ const SendApplication = () => {
           hrEmail,
           resumeUrl: user.resumeUrl,
         }, { withCredentials: true });
+
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          to_email: hrEmail,
+          user_email: userEmail,
+          subject : res?.data?.subject,
+          emailData: res?.data?.plainText
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
 
       toast.success("Application sent successfully", { id: toastId });
 
@@ -70,7 +83,7 @@ const SendApplication = () => {
     }
 
     finally {
-      clearTimeout(timer);   // 🔥 very important
+      clearTimeout(timer);
       setLoading(false);
     }
   };
