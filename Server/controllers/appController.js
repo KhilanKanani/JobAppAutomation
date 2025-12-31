@@ -1,15 +1,5 @@
 const Application = require("../models/applicationmodel");
-const nodemailer = require("nodemailer");
 const generateJobEmail = require("../config/gptEmailGenerator");
-
-const withTimeout = (promise, ms) => {
-    return Promise.race([
-        promise,
-        new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("SMTP timeout on Render")), ms)
-        ),
-    ]);
-};
 
 const sendApplication = async (req, res) => {
     try {
@@ -27,18 +17,6 @@ const sendApplication = async (req, res) => {
 
         /*  GPT EMAIL  */
         const emailContent = await generateJobEmail({ fullName, email, role, companyName, resumeUrl, });
-
-        /*  MAIL SETUP  */
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS,
-            },
-        });
-
-        await transporter.verify();
-        console.log("Email Verified");
 
         // Generate dynamic subject line
         const subjectLines = role

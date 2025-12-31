@@ -66,14 +66,23 @@ const generateJobEmail = async ({ fullName, email, role, companyName, resumeUrl,
 
     try {
         const response = await openai.responses.create({
-            model: "gpt-4.1-mini",
-            input: prompt,
+            model: "gpt-4o-mini",
+            input: [
+                {
+                    role: "system",
+                    content: "You are an expert HR email writer. Write naturally and vary tone.",
+                },
+                {
+                    role: "user",
+                    content: prompt + `\nVariation Seed: ${Date.now()}`,
+                },
+            ],
             temperature: 0.6,
             max_output_tokens: 500,
         });
 
-        const emailContent = response.output?.[0]?.content?.[0]?.text?.trim();
- 
+        const emailContent = response.output_text?.trim();
+
         if (!emailContent) {
             throw new Error("Empty email content from OpenAI");
         }
