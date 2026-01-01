@@ -31,6 +31,16 @@ const applicationSchema = new mongoose.Schema(
             default: "",
         },
 
+        open: {
+            type: Boolean,
+            default: false
+        },
+
+        openAt: {
+            type: Date,
+            default: null
+        },
+
         status: {
             type: String,
             enum: ["sent", "failed"],

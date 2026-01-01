@@ -65,7 +65,8 @@ const SendApplication = () => {
           to_email: hrEmail,
           user_email: userEmail,
           subject : res?.data?.subject,
-          emailData: res?.data?.plainText
+          emailData: res?.data?.plainText,
+          id : res?.data?._id
         },
         import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       );

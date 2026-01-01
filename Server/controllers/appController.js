@@ -97,4 +97,29 @@ const getUserApplications = async (req, res) => {
     }
 };
 
-module.exports = { sendApplication, getUserApplications };
+const trackEmail = async (req, res) => {
+    try {
+        const application = await Application.findById(req.params.id);
+        console.log(application)
+
+        if (application && !application.open) {
+            application.open = true;
+            application.openAt = new Date();
+            await application.save();
+        }
+
+        // 1x1 transparent pixel
+        const pixel = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", "base64");
+        res.set("Content-Type", "image/png");
+        res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.send(pixel);
+    }
+
+    catch (err) {
+        res.status(200).end();
+    }
+};
+
+
+
+module.exports = { sendApplication, getUserApplications, trackEmail };

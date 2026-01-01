@@ -94,26 +94,39 @@ const History = () => {
                   </div>
                 </div>
 
-                {/* BOTTOM */}
-                <div className="mt-5 flex items-center justify-between">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${app.status === "sent"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                      }`}
-                  >
-                    {app.status.toUpperCase()}
-                  </span>
+                <div className="mt-5 flex items-center justify-between gap-2">
+                  <div className="flex flex-col gap-1">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold w-fit ${app.status === "sent"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {app.status.toUpperCase()}
+                    </span>
+
+                    {/* OPEN INFO */}
+                    <div className="mb-4 text-xs font-semibold bg-gray-200 p-2 rounded-full  text-gray-500">
+                      {app.open ? (
+                        <p>
+                          Opened on{" "}
+                          {new Date(app.openAt).toLocaleString()}
+                        </p>
+                      ) : (
+                        <p>Email not opened yet</p>
+                      )}
+                    </div>
+
+                  </div>
 
                   <button
-                    onClick={() =>
-                      setOpenEmail(app._id)
-                    }
-                    className="px-4 py-2 text-sm cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    onClick={() => setOpenEmail(app._id)}
+                    className="px-4 mt-2 py-2 text-sm cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                   >
                     View Email
                   </button>
                 </div>
+
               </div>
             ))}
           </div>
